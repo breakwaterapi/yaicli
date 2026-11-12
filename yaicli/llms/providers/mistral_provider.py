@@ -1,16 +1,18 @@
 import json
 from typing import Any, Dict, Generator, List, Optional, Union, cast
 
-from mistralai import (
+from mistralai.client import Mistral
+from mistralai.client.models import (
+    ChatCompletionResponse,
+    CompletionEvent,
+    ContentChunk,
     DocumentURLChunk,
     ImageURLChunk,
-    Mistral,
     ReferenceChunk,
     TextChunk,
 )
-from mistralai.models import ChatCompletionResponse, CompletionEvent, ContentChunk
-from mistralai.models import ToolCall as MistralToolCall
-from mistralai.utils.eventstreaming import EventStream
+from mistralai.client.models import ToolCall as MistralToolCall
+from mistralai.client.utils.eventstreaming import EventStream
 
 from ...config import cfg
 from ...console import get_console

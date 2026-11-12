@@ -2,8 +2,8 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from mistralai.models import ChatCompletionResponse
-from mistralai.utils.eventstreaming import EventStream
+from mistralai.client.models import ChatCompletionResponse
+from mistralai.client.utils.eventstreaming import EventStream
 
 from yaicli.exceptions import MCPToolsError
 from yaicli.llms.providers.mistral_provider import MistralProvider
@@ -43,13 +43,13 @@ class TestMistralProvider:
     @pytest.fixture
     def patched_provider(self, mock_config):
         """Fixture that returns a patched MistralProvider instance to avoid repeated patching"""
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
             yield provider
 
     def test_init(self, mock_config):
         """Test initialization of MistralProvider"""
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
 
             # Check initialization parameters
@@ -71,7 +71,7 @@ class TestMistralProvider:
         mock_config["BASE_URL"] = "https://custom-api.mistral.ai/v1"
         mock_config["SERVER"] = "custom-server"
 
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
             params = provider.get_client_params()
 
@@ -101,7 +101,7 @@ class TestMistralProvider:
         """Test get_completion_params with extra headers"""
         mock_config["EXTRA_HEADERS"] = {"X-Custom": "test"}
 
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
             params = provider.get_completion_params()
 
@@ -132,7 +132,7 @@ class TestMistralProvider:
         mock_get_schemas.return_value = [{"type": "function", "function": {"name": "test_func"}}]
         mock_get_mcp_tools.return_value = [{"type": "function", "function": {"name": "mcp_func"}}]
 
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
             params = provider.get_completion_params()
 
@@ -150,7 +150,7 @@ class TestMistralProvider:
         mock_get_schemas.return_value = [{"type": "function", "function": {"name": "test_func"}}]
         mock_get_mcp_tools.return_value = [{"type": "function", "function": {"name": "_mcp__clock"}}]
 
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
             params = provider.get_completion_params(tool_policy=ToolPolicy(False, False))
 
@@ -166,7 +166,7 @@ class TestMistralProvider:
         mock_get_schemas.return_value = [{"type": "function", "function": {"name": "regular_func"}}]
         mock_get_mcp_tools.side_effect = MCPToolsError("Error loading MCP tools")
 
-        with patch("mistralai.Mistral"), patch("warnings.filterwarnings"):
+        with patch("mistralai.client.Mistral"), patch("warnings.filterwarnings"):
             provider = MistralProvider(config=mock_config)
             params = provider.get_completion_params()
 
@@ -349,7 +349,7 @@ class TestMistralProvider:
 
     def test_completion_streaming(self, mock_config):
         """Test completion method with streaming response"""
-        with patch("mistralai.Mistral"):
+        with patch("mistralai.client.Mistral"):
             with patch("warnings.filterwarnings"):
                 # Set up mocks
                 provider = MistralProvider(config=mock_config)
@@ -404,7 +404,7 @@ class TestMistralProvider:
 
     def test_handle_stream_response_with_tool_calls(self, mock_config):
         """Test _handle_stream_response with tool calls"""
-        with patch("mistralai.Mistral"):
+        with patch("mistralai.client.Mistral"):
             with patch("warnings.filterwarnings"):
                 provider = MistralProvider(config=mock_config)
 
@@ -465,7 +465,7 @@ class TestMistralProvider:
 
     def test_handle_normal_response_edge_case(self, mock_config):
         """Test _handle_normal_response method with empty or invalid response"""
-        with patch("mistralai.Mistral"):
+        with patch("mistralai.client.Mistral"):
             with patch("warnings.filterwarnings"):
                 provider = MistralProvider(config=mock_config)
 
@@ -484,7 +484,7 @@ class TestMistralProvider:
 
     def test_completion_with_verbose(self, mock_config):
         """Test completion method with verbose flag enabled"""
-        with patch("mistralai.Mistral"):
+        with patch("mistralai.client.Mistral"):
             with patch("warnings.filterwarnings"):
                 # Enable verbose mode
                 provider = MistralProvider(config=mock_config, verbose=True)
@@ -518,7 +518,7 @@ class TestMistralProvider:
 
     def test_process_tool_call_chunk_with_dict_arguments(self, mock_config):
         """Test _process_tool_call_chunk with dictionary arguments instead of string"""
-        with patch("mistralai.Mistral"):
+        with patch("mistralai.client.Mistral"):
             with patch("warnings.filterwarnings"):
                 provider = MistralProvider(config=mock_config)
 
@@ -541,7 +541,7 @@ class TestMistralProvider:
 
     def test_process_tool_call_chunk_with_no_function(self, mock_config):
         """Test _process_tool_call_chunk with tool that has no function"""
-        with patch("mistralai.Mistral"):
+        with patch("mistralai.client.Mistral"):
             with patch("warnings.filterwarnings"):
                 provider = MistralProvider(config=mock_config)
 
